@@ -35,10 +35,20 @@ _Startup:
 
 mainLoop:
             ; Insert your code here
-            NOP
-
-            feed_watchdog
-            BRA    mainLoop
+            LDA		#$80			; Unicamente pin 7 del puerto B como salida
+            STA		PTBDD			; Guardar en el registro correspondiente
+Parpadeo:	
+			LDA		#$FF			; Inicio del retardo
+Retardo:
+			DBNZA	Retardo			; Decrementa acumulador y brinca si no es cero
+			
+			LDA		PTBD			; Carga en el acumulador el contenido del puerto B
+			COMA					; Operacion logica NOT con el acumulador
+			STA		PTBD			; Guardar el acmulador en el puerto B
+			
+			BRA		Parpadeo		; Repetir indefinidamente
+			
+            BRA    	mainLoop
 			
 ;**************************************************************
 ;* spurious - Spurious Interrupt Service Routine.             *
